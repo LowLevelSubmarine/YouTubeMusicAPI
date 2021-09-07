@@ -1,4 +1,4 @@
-package com.lowlevelsubmarine.ytm_api.utils
+package com.lowlevelsubmarine.ytma.utils
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement

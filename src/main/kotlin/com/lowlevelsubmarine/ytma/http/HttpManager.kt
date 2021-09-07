@@ -1,4 +1,4 @@
-package com.lowlevelsubmarine.ytm_api.http
+package com.lowlevelsubmarine.ytma.http
 
 import java.net.URL
 

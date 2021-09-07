@@ -1,3 +1,3 @@
 
-rootProject.name = "YouTubeMusicAPI"
+rootProject.name = "YTMA"
 

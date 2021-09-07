@@ -1,6 +1,6 @@
-package com.lowlevelsubmarine.ytm_api.dto
+package com.lowlevelsubmarine.ytma.dto
 
-import com.lowlevelsubmarine.ytm_api.utils.GsonUtils
+import com.lowlevelsubmarine.ytma.utils.GsonUtils
 
 class PostFields {
 

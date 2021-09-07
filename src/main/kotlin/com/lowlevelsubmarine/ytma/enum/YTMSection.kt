@@ -1,4 +1,4 @@
-package com.lowlevelsubmarine.ytm_api.enum
+package com.lowlevelsubmarine.ytma.enum
 
 enum class YTMSection(private val string: String) {
 

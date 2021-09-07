@@ -1,6 +1,5 @@
-package com.lowlevelsubmarine.ytm_api.request
+package com.lowlevelsubmarine.ytma.request
 
-import com.lowlevelsubmarine.ytm_api.core.YTMA
 import java.net.URL
 
 open class Request() {

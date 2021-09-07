@@ -1,15 +1,15 @@
-package com.lowlevelsubmarine.ytm_api.request
+package com.lowlevelsubmarine.ytma.request
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.lowlevelsubmarine.ytm_api.core.YTMA
-import com.lowlevelsubmarine.ytm_api.dto.PostFields
-import com.lowlevelsubmarine.ytm_api.entity.*
-import com.lowlevelsubmarine.ytm_api.enum.YTMSection
-import com.lowlevelsubmarine.ytm_api.utils.GsonUtils.Companion.surf
-import com.lowlevelsubmarine.ytm_api.utils.StringUtils.Companion.asJsonElement
-import com.lowlevelsubmarine.ytm_api.utils.YouTubeParsingUtils.Companion.unwrapRuns
+import com.lowlevelsubmarine.ytma.core.YTMA
+import com.lowlevelsubmarine.ytma.dto.PostFields
+import com.lowlevelsubmarine.ytma.entity.*
+import com.lowlevelsubmarine.ytma.enum.YTMSection
+import com.lowlevelsubmarine.ytma.utils.GsonUtils.Companion.surf
+import com.lowlevelsubmarine.ytma.utils.StringUtils.Companion.asJsonElement
+import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.unwrapRuns
 
 class SearchRequest(private val ytma: YTMA, private val query: String) : Request() {
 

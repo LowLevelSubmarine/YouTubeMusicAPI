@@ -1,4 +1,4 @@
-package com.lowlevelsubmarine.ytm_api.entity
+package com.lowlevelsubmarine.ytma.entity
 
 class SongCache(song: Song) : ContentCache(song), Song {
 

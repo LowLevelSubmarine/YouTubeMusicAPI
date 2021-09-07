@@ -1,4 +1,4 @@
-import com.lowlevelsubmarine.ytm_api.core.YTMA
+import com.lowlevelsubmarine.ytma.core.YTMA
 
 fun main() {
     val ytma = YTMA()

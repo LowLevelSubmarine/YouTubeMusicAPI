@@ -1,4 +1,4 @@
-package com.lowlevelsubmarine.ytm_api.entity
+package com.lowlevelsubmarine.ytma.entity
 
 interface Content {
 

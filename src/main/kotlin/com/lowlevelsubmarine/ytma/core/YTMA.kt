@@ -1,8 +1,8 @@
-package com.lowlevelsubmarine.ytm_api.core
+package com.lowlevelsubmarine.ytma.core
 
-import com.lowlevelsubmarine.ytm_api.http.DefaultHttpInterface
-import com.lowlevelsubmarine.ytm_api.http.HttpManager
-import com.lowlevelsubmarine.ytm_api.request.SearchRequest
+import com.lowlevelsubmarine.ytma.http.DefaultHttpInterface
+import com.lowlevelsubmarine.ytma.http.HttpManager
+import com.lowlevelsubmarine.ytma.request.SearchRequest
 
 class YTMA {
 

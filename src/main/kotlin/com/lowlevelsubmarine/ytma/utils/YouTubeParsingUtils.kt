@@ -1,7 +1,7 @@
-package com.lowlevelsubmarine.ytm_api.utils
+package com.lowlevelsubmarine.ytma.utils
 
 import com.google.gson.JsonElement
-import com.lowlevelsubmarine.ytm_api.utils.GsonUtils.Companion.surf
+import com.lowlevelsubmarine.ytma.utils.GsonUtils.Companion.surf
 
 class YouTubeParsingUtils {
     companion object {
