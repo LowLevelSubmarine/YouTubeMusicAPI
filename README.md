@@ -1,6 +1,6 @@
 [![](https://jitpack.io/v/LowLevelSubmarine/YouTubeMusicAPI.svg)](https://jitpack.io/#LowLevelSubmarine/YouTubeMusicAPI)
 
-# YouTube Music API (in-official)
+# YouTubeMusic API (in-official)
 This API is made to scrape data from youtube music while avoiding their api services.
 The API will work fast, due to the fact that its not loading the real site and is instead accessing the data directly via the youtube music data endpoint.
 
