@@ -9,6 +9,8 @@ import com.lowlevelsubmarine.ytma.entity.*
 import com.lowlevelsubmarine.ytma.enum.YTMSection
 import com.lowlevelsubmarine.ytma.utils.GsonUtils.Companion.surf
 import com.lowlevelsubmarine.ytma.utils.StringUtils.Companion.asJsonElement
+import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.parseMillis
+import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.parseViews
 import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.unwrapRuns
 
 class SearchRequest(private val ytma: YTMA, private val query: String) : Request() {
@@ -65,6 +67,14 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
             return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(2)
         }
 
+        override fun getDuration(): Long {
+            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-1).parseMillis()
+        }
+
+        override fun getViews(): Long {
+            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-3).parseViews()
+        }
+
         fun asCached(): VideoCache {
             return VideoCache(this)
         }
@@ -83,6 +93,10 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
 
         override fun getAuthor(): String {
             return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(2)
+        }
+
+        override fun getDuration(): Long {
+            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-1).parseMillis()
         }
 
         override fun getAlbum(): String {
