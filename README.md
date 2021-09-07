@@ -12,7 +12,7 @@ Just create a new *YTMA* object and start with the *search(String)* method ;)
 **Gradle**
 ```gradle
 dependencies {
-   implementation 'com.github.LowLevelSubmarine:ytma:v1.1.1'
+   implementation 'com.github.LowLevelSubmarine:YouTubeMusicAPI:v1.1.1'
 }
 
 repositories {
@@ -24,7 +24,7 @@ repositories {
 ```xml
 <dependency>
     <groupId>com.github.LowLevelSubmarine</groupId>
-    <artifactId>ytma</artifactId>
+    <artifactId>YouTubeMusicAPI</artifactId>
     <version>v1.1.1</version>
 </dependency>
 ```
