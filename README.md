@@ -12,7 +12,7 @@ Just create a new *YTMA* object and start with the *search(String)* method ;)
 **Gradle**
 ```gradle
 dependencies {
-   implementation 'com.github.LowLevelSubmarine:ytma:v2.2.0'
+   implementation 'com.github.LowLevelSubmarine:ytma:v1.1.1'
 }
 
 repositories {
@@ -25,7 +25,7 @@ repositories {
 <dependency>
     <groupId>com.github.LowLevelSubmarine</groupId>
     <artifactId>ytma</artifactId>
-    <version>v2.2.0</version>
+    <version>v1.1.1</version>
 </dependency>
 ```
 ```xml
