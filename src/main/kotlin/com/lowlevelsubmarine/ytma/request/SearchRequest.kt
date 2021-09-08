@@ -17,6 +17,8 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
 
     private val songs: List<Song>
     private val videos: List<Video>
+    private val songPager = MediaTypeSearchRequest(this.ytma, this.query, YTMSection.SONGS) { SongFieldMapper(it, true).asCached() as Song }
+    private val videoPager = MediaTypeSearchRequest(this.ytma, this.query, YTMSection.VIDEOS) { VideoFieldMapper(it, true).asCached() as Video }
 
     init {
         val postFields = PostFields()
@@ -25,16 +27,24 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
         val sectionList = result.surf("contents", "tabbedSearchResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents").asJsonArray
         val songSection = sectionList.getSectionRoot(YTMSection.SONGS)?.surf("musicShelfRenderer")
         val videoSection = sectionList.getSectionRoot(YTMSection.VIDEOS)?.surf("musicShelfRenderer")
-        this.songs = songSection?.asJsonObject?.extractContents { SongFieldMapper(it).asCached() } ?: listOf()
-        this.videos = videoSection?.asJsonObject?.extractContents { VideoFieldMapper(it).asCached() } ?: listOf()
+        this.songs = songSection?.asJsonObject?.extractContents { SongFieldMapper(it, false).asCached() } ?: listOf()
+        this.videos = videoSection?.asJsonObject?.extractContents { VideoFieldMapper(it, false).asCached() } ?: listOf()
     }
 
     fun getSongs(): List<Song> {
         return this.songs
     }
 
+    fun getSongPager(): MediaTypeSearchRequest<Song> {
+        return this.songPager
+    }
+
     fun getVideos(): List<Video> {
         return this.videos
+    }
+
+    fun getVideoPager(): MediaTypeSearchRequest<Video> {
+        return this.videoPager
     }
 
     private inline fun <T : Content> JsonObject.extractContents(mapper: (JsonObject) -> T): List<T> {
@@ -53,7 +63,9 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
         return null
     }
 
-    private class VideoFieldMapper(private val root: JsonObject) : Video {
+    private class VideoFieldMapper(private val root: JsonObject, isDetailedSearch: Boolean) : Video {
+
+        private val runOffset = if (isDetailedSearch) 0 else 2
 
         override fun getId(): String {
             return this.root.surf("playlistItemData", "videoId").asString
@@ -64,7 +76,7 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
         }
 
         override fun getAuthor(): String {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(2)
+            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(runOffset)
         }
 
         override fun getDuration(): Long {
@@ -81,7 +93,9 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
 
     }
 
-    private class SongFieldMapper(private val root: JsonObject) : Song {
+    private class SongFieldMapper(private val root: JsonObject, isDetailedSearch: Boolean) : Song {
+
+        private val runOffset = if (isDetailedSearch) 0 else 2
 
         override fun getId(): String {
             return this.root.surf("playlistItemData", "videoId").asString
@@ -92,7 +106,7 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
         }
 
         override fun getAuthor(): String {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(2)
+            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(runOffset)
         }
 
         override fun getDuration(): Long {
