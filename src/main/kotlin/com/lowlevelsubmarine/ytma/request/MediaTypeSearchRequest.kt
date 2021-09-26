@@ -6,19 +6,23 @@ import com.lowlevelsubmarine.ytma.core.YTMA
 import com.lowlevelsubmarine.ytma.dto.PostFields
 import com.lowlevelsubmarine.ytma.entity.Content
 import com.lowlevelsubmarine.ytma.entity.Pager
-import com.lowlevelsubmarine.ytma.enum.YTMSection
+import com.lowlevelsubmarine.ytma.enum.YTMContentType
 import com.lowlevelsubmarine.ytma.utils.GsonUtils.Companion.surf
 import com.lowlevelsubmarine.ytma.utils.StringUtils.Companion.asJsonElement
 
 class MediaTypeSearchRequest<T : Content>(
     private val ytma: YTMA,
     private val query: String,
-    private val mediaType: YTMSection,
+    private val mediaType: YTMContentType,
     private val mapper: (JsonObject) -> T
 ) : Request(), Pager<T> {
 
     private val results: MutableList<T> = mutableListOf()
     private var continuations: String? = null
+
+    init {
+        fetchNext()
+    }
 
     override fun getResults(): List<T> {
         return this.results.toList()

@@ -1,8 +1,14 @@
 package com.lowlevelsubmarine.ytma.core
 
+import com.lowlevelsubmarine.ytma.entity.Song
+import com.lowlevelsubmarine.ytma.entity.Video
+import com.lowlevelsubmarine.ytma.enum.YTMContentType
 import com.lowlevelsubmarine.ytma.http.DefaultHttpInterface
 import com.lowlevelsubmarine.ytma.http.HttpManager
+import com.lowlevelsubmarine.ytma.request.MediaTypeSearchRequest
 import com.lowlevelsubmarine.ytma.request.SearchRequest
+import com.lowlevelsubmarine.ytma.request.mapper.SongFieldMapper
+import com.lowlevelsubmarine.ytma.request.mapper.VideoFieldMapper
 
 class YTMA {
 
@@ -24,6 +30,14 @@ class YTMA {
 
     fun search(query: String): SearchRequest {
         return SearchRequest(this, query)
+    }
+
+    fun songPager(query: String): MediaTypeSearchRequest<Song> {
+        return MediaTypeSearchRequest(this, query, YTMContentType.SONGS) { SongFieldMapper(it, true).asCached() }
+    }
+
+    fun videoPager(query: String): MediaTypeSearchRequest<Video> {
+        return MediaTypeSearchRequest(this, query, YTMContentType.SONGS) { VideoFieldMapper(it, true).asCached() }
     }
 
 

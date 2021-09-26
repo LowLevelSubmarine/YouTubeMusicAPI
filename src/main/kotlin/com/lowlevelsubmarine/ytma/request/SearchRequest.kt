@@ -6,29 +6,31 @@ import com.google.gson.JsonObject
 import com.lowlevelsubmarine.ytma.core.YTMA
 import com.lowlevelsubmarine.ytma.dto.PostFields
 import com.lowlevelsubmarine.ytma.entity.*
-import com.lowlevelsubmarine.ytma.enum.YTMSection
+import com.lowlevelsubmarine.ytma.enum.YTMContentType
+import com.lowlevelsubmarine.ytma.enum.YTMSearchType
+import com.lowlevelsubmarine.ytma.request.mapper.SongFieldMapper
+import com.lowlevelsubmarine.ytma.request.mapper.VideoFieldMapper
 import com.lowlevelsubmarine.ytma.utils.GsonUtils.Companion.surf
 import com.lowlevelsubmarine.ytma.utils.StringUtils.Companion.asJsonElement
-import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.parseMillis
-import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.parseViews
 import com.lowlevelsubmarine.ytma.utils.YouTubeParsingUtils.Companion.unwrapRuns
 
 class SearchRequest(private val ytma: YTMA, private val query: String) : Request() {
 
     private val songs: List<Song>
     private val videos: List<Video>
-    private val songPager = MediaTypeSearchRequest(this.ytma, this.query, YTMSection.SONGS) { SongFieldMapper(it, true).asCached() as Song }
-    private val videoPager = MediaTypeSearchRequest(this.ytma, this.query, YTMSection.VIDEOS) { VideoFieldMapper(it, true).asCached() as Video }
+    private val topResult: Content?
 
     init {
         val postFields = PostFields()
         postFields.query = this.query
         val result = this.ytma.getHttpManager().post(getEndpoint("search"), postFields.toJson()).asJsonElement()
         val sectionList = result.surf("contents", "tabbedSearchResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents").asJsonArray
-        val songSection = sectionList.getSectionRoot(YTMSection.SONGS)?.surf("musicShelfRenderer")
-        val videoSection = sectionList.getSectionRoot(YTMSection.VIDEOS)?.surf("musicShelfRenderer")
+        val songSection = sectionList.getSectionRoot(YTMSearchType.SONGS)?.surf("musicShelfRenderer")
+        val videoSection = sectionList.getSectionRoot(YTMSearchType.VIDEOS)?.surf("musicShelfRenderer")
+        val topResultSection = sectionList.getSectionRoot(YTMSearchType.TOP_RESULT)?.surf("musicShelfRenderer")
         this.songs = songSection?.asJsonObject?.extractContents { SongFieldMapper(it, false).asCached() } ?: listOf()
         this.videos = videoSection?.asJsonObject?.extractContents { VideoFieldMapper(it, false).asCached() } ?: listOf()
+        this.topResult = topResultSection?.asJsonObject?.extractTopResult()
     }
 
     fun getSongs(): List<Song> {
@@ -36,7 +38,7 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
     }
 
     fun getSongPager(): MediaTypeSearchRequest<Song> {
-        return this.songPager
+        return this.ytma.songPager(this.query)
     }
 
     fun getVideos(): List<Video> {
@@ -44,7 +46,7 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
     }
 
     fun getVideoPager(): MediaTypeSearchRequest<Video> {
-        return this.videoPager
+        return this.ytma.videoPager(this.query)
     }
 
     private inline fun <T : Content> JsonObject.extractContents(mapper: (JsonObject) -> T): List<T> {
@@ -55,72 +57,25 @@ class SearchRequest(private val ytma: YTMA, private val query: String) : Request
         return list
     }
 
-    private fun JsonArray.getSectionRoot(ytmSection: YTMSection): JsonElement? {
+    private fun JsonObject.extractTopResult(): Content? {
+        val listItemRenderer = this.surf("contents", 0, "musicResponsiveListItemRenderer").asJsonObject
+        val ytmName = listItemRenderer.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(0)
+        val contentType = YTMContentType.fromYTMName(ytmName);
+        if (contentType == YTMContentType.SONGS) {
+            return SongFieldMapper(listItemRenderer, false).asCached()
+        } else if (contentType == YTMContentType.VIDEOS) {
+            return VideoFieldMapper(listItemRenderer, false).asCached()
+        } else {
+            return null
+        }
+    }
+
+    private fun JsonArray.getSectionRoot(ytmSearchType: YTMSearchType): JsonElement? {
         for (entry in this) {
             val title = entry.surf("musicShelfRenderer", "title").unwrapRuns()
-            if (title == ytmSection.toString()) return entry
+            if (title == ytmSearchType.getString()) return entry
         }
         return null
-    }
-
-    private class VideoFieldMapper(private val root: JsonObject, isDetailedSearch: Boolean) : Video {
-
-        private val runOffset = if (isDetailedSearch) 0 else 2
-
-        override fun getId(): String {
-            return this.root.surf("playlistItemData", "videoId").asString
-        }
-
-        override fun getTitle(): String {
-            return this.root.surf("flexColumns", 0, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns()
-        }
-
-        override fun getAuthor(): String {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(runOffset)
-        }
-
-        override fun getDuration(): Long {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-1).parseMillis()
-        }
-
-        override fun getViews(): Long {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-3).parseViews()
-        }
-
-        fun asCached(): VideoCache {
-            return VideoCache(this)
-        }
-
-    }
-
-    private class SongFieldMapper(private val root: JsonObject, isDetailedSearch: Boolean) : Song {
-
-        private val runOffset = if (isDetailedSearch) 0 else 2
-
-        override fun getId(): String {
-            return this.root.surf("playlistItemData", "videoId").asString
-        }
-
-        override fun getTitle(): String {
-            return this.root.surf("flexColumns", 0, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns()
-        }
-
-        override fun getAuthor(): String {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(runOffset)
-        }
-
-        override fun getDuration(): Long {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-1).parseMillis()
-        }
-
-        override fun getAlbum(): String {
-            return this.root.surf("flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer", "text").unwrapRuns(-3)
-        }
-
-        fun asCached(): SongCache {
-            return SongCache(this)
-        }
-
     }
 
 }
