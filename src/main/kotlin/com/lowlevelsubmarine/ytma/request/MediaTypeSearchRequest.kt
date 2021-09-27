@@ -1,6 +1,7 @@
 package com.lowlevelsubmarine.ytma.request
 
 import com.google.gson.JsonElement
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.lowlevelsubmarine.ytma.core.YTMA
 import com.lowlevelsubmarine.ytma.dto.PostFields
@@ -39,7 +40,7 @@ class MediaTypeSearchRequest<T : Content>(
             val result = this.ytma.getHttpManager().post(getEndpoint("search"), postFields.toJson()).asJsonElement()
             result.surf("contents", "tabbedSearchResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicShelfRenderer")
         }
-        return extractResults(musicShelf)
+        return if (musicShelf != JsonNull.INSTANCE) extractResults(musicShelf) else listOf()
     }
 
     private fun extractResults(root: JsonElement): List<T> {

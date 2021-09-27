@@ -15,9 +15,11 @@ class GsonUtils {
             } else {
                 val key = keys[0]
                 if (key is String) {
-                    return this.asJsonObject.get(key).surf(*keys.copyOfRange(1, keys.size))
+                    val obj = this.asJsonObject
+                    return if (obj.has(key)) this.asJsonObject.get(key).surf(*keys.copyOfRange(1, keys.size)) else JsonNull.INSTANCE
                 } else if (key is Int) {
-                    return this.asJsonArray.get(key).surf(*keys.copyOfRange(1, keys.size))
+                    val arr = this.asJsonArray
+                    return if (arr.size() > key) this.asJsonArray.get(key).surf(*keys.copyOfRange(1, keys.size)) else JsonNull.INSTANCE
                 } else {
                     return JsonNull.INSTANCE
                 }
