@@ -38,7 +38,7 @@ class MediaTypeSearchRequest<T : Content>(
             result.surf("continuationContents", "musicShelfContinuation")
         } else {
             val result = this.ytma.getHttpManager().post(getEndpoint("search"), postFields.toJson()).asJsonElement()
-            result.surf("contents", "tabbedSearchResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicShelfRenderer")
+            result.surf("contents", "tabbedSearchResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 1, "musicShelfRenderer")
         }
         return if (musicShelf != JsonNull.INSTANCE) extractResults(musicShelf) else listOf()
     }
